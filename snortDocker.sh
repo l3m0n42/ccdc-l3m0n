@@ -48,7 +48,7 @@ container_install(){
 		snort -i $interface -c /etc/snort/etc/snort.conf -A console	
 	
 	else [[$(echo 'Installing Snort container <3')]]; then
-		docker pull plinton/docker-snort
+		docker pull linton/docker-snort
                 read -p 'desired interface for docker: ' interface
                 docker run -it --rm --net=host linton/docker-snort /bin/bash
                 snort -i $interface -c /etc/snort/etc/snort.conf -A console
