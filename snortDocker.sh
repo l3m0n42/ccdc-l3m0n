@@ -5,7 +5,6 @@ if [ "$EUID" -ne 0 ]; then
 fi
 ip addr show
 read -p 'desired interface for container to listen on: ' interface
-sleep 5
 manager_detection(){	
 	if [ $(command -v apt) ]; then
 		apt remove docker docker-engine docker.io containerd runc
@@ -18,14 +17,7 @@ manager_detection(){
 		apt install docker.io docker-ce docker-ce-cli containerd.io docker-compose-plugin -y
 		systemctl start docker
 	elif [ $(command -v yum) ]; then
-		remove docker \
-                  	docker-client \
-                  	docker-client-latest \
-                  	docker-common \
-                  	docker-latest \
-                  	docker-latest-logrotate \
-                  	docker-logrotate \
-                  	docker-engine
+		remove docker docker-client docker-client-latest docker-common docker-latest docker-latest-logrotate docker-logrotate docker-engine
 		yum install -y yum-utils
 		yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
 		yum install docker-ce docker-ce-cli containerd.io docker-compose-plugin
@@ -52,7 +44,7 @@ $(echo 'Installing Snort container <3')]];
 docker pull plinton/docker-snort:latest
 read -p 'desired interface for docker: ' interface
 docker run -it --rm --net=host linton/docker-snort /bin/bash
-snort -i $interface -c /etc/snort/etc/snort.conf -A console
+docker exec plinton:snort "snort -i $interface -c /etc/snort/etc/snort.conf -A console"
 
 }
 manager_detection
