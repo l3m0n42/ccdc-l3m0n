@@ -3,7 +3,9 @@ if [ "$EUID" -ne 0 ]; then
 	echo 'script requires root privileges'
 	exit 1
 fi
-
+ip addr show
+read -p 'desired interface for container to listen on: ' interface
+sleep 5
 manager_detection(){	
 	if [ $(command -v apt) ]; then
 		apt remove docker docker-engine docker.io containerd runc
@@ -45,20 +47,12 @@ manager_detection(){
 	fi
 }
 container_install(){
-	if [[ "$(docker image inspect linton:docker-snort 2> /dev/null)" == "" ]]; then
-		echo 'Snort container already installed'
-		read -p 'desired interface for docker: ' interface
-		docker run -it --rm --net=host linton/docker-snort /bin/bash
-		snort -i $interface -c /etc/snort/etc/snort.conf -A console	
-	
-	else [[$(echo 'Installing Snort container <3')]];
-		docker pull plinton/docker-snort
-                read -p 'desired interface for docker: ' interface
-                docker run -it --rm --net=host linton/docker-snort /bin/bash
-                snort -i $interface -c /etc/snort/etc/snort.conf -A console
+$(echo 'Installing Snort container <3')]];
 
-
-	fi
+docker pull plinton/docker-snort:latest
+read -p 'desired interface for docker: ' interface
+docker run -it --rm --net=host linton/docker-snort /bin/bash
+snort -i $interface -c /etc/snort/etc/snort.conf -A console
 
 }
 manager_detection
