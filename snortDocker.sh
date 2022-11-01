@@ -39,10 +39,9 @@ manager_detection(){
 	fi
 }
 container_install(){
-$(echo 'Installing Snort container <3')]];
+$(echo 'Installing Snort container for you pumpkin <3')]];
 
 docker pull plinton/docker-snort:latest
-read -p 'desired interface for docker: ' interface
 docker run -it --rm --net=host linton/docker-snort /bin/bash
 docker exec plinton:snort "snort -i $interface -c /etc/snort/etc/snort.conf -A console"
 
