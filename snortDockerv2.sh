@@ -3,8 +3,7 @@ if [ "$EUID" -ne 0 ]; then
         echo 'script requires root privileges'
         exit 1
 fi
-ip addr show
-read -p 'desired interface for container to listen on: ' interface
+interface=$ (ip -brief a | grep -v 127.0.0.1 | grep -E '[1-9]{,3}[.][1-9]{,3}[.][1-9]{,3}[.][1-9]' | awk {'print $1'})
 manager_detection(){
         if [ $(command -v apt) ]; then
                 apt update
