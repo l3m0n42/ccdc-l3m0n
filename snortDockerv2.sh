@@ -7,8 +7,7 @@ interface=$(ip addr show | grep "[1-9]" | grep -v "link/ether" | grep -v "inet6"
 manager_detection(){
         if [ $(command -v apt) ]; then
                 apt update
-                for i in docker.io docker-compose-plugin containerd.io -y do;
-			apt install $i -y
+                for i in docker.io docker-compose-plugin containerd.io; do apt install -y $i; done
                 systemctl start docker
         elif [ $(command -v yum) ]; then
                 yum install -y yum-utils device-mapper-persistent-data lvm2
@@ -16,7 +15,6 @@ manager_detection(){
                 yum update
 		yum install docker-ce containerd.io docker-compose-plugin
                 systemctl start docker
-
         elif [ $(command -v pacman) ]; then
                 pacman -S gnome-terminal
                 packman -S wget
@@ -26,7 +24,8 @@ manager_detection(){
                 sudo cp docker/* /usr/bin/
                 dockerd &
         elif [ $(command -v apk) ]; then
-                apk update 
+                sed -i '/community/s/^#//g' /etc/apk/repositories
+		apk update 
 		apk add docker openrc
 		addgroup username docker
                 rc-update add docker boot
