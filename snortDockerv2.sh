@@ -7,7 +7,8 @@ interface=$(ip addr show | grep "[1-9]" | grep -v "link/ether" | grep -v "inet6"
 manager_detection(){
         if [ $(command -v apt) ]; then
                 apt update
-                apt install docker.io docker-compose-plugin containerd.io -y
+                for i in docker.io docker-compose-plugin containerd.io -y do;
+			apt install $i -y
                 systemctl start docker
         elif [ $(command -v yum) ]; then
                 yum install -y yum-utils device-mapper-persistent-data lvm2
@@ -30,6 +31,8 @@ manager_detection(){
 		addgroup username docker
                 rc-update add docker boot
                 service docker start
+		echo "waiting for docker service to start"
+		sleep 5
         fi
 }
 container_install(){
