@@ -3,18 +3,17 @@ if [ "$EUID" -ne 0 ]; then
         echo 'script requires root privileges'
         exit 1
 fi
-interface=$(ip -brief a | grep -v 127.0.0.1 | grep -E '[1-9]{,3}[.][1-9]{,3}[.][1-9]{,3}[.][1-9]' | awk {'print $1'})
+interface=$(ip addr show | grep "[1-9]" | grep -v "link/ether" | grep -v "inet6" | grep "state UP" | awk {'print $2'} | sed 's/://')
 manager_detection(){
         if [ $(command -v apt) ]; then
                 apt update
-                apt install docker.io docker-compose-plugin -y
-	      	containerd.io -y
+                apt install docker.io docker-compose-plugin containerd.io -y
                 systemctl start docker
         elif [ $(command -v yum) ]; then
-                remove docker docker-client docker-client-latest docker-common docker-latest docker-latest-logrotate docker-logrotate docker-engine
-                yum install -y yum-utils
-                yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
-                yum install docker-ce docker-ce-cli containerd.io docker-compose-plugin
+                yum install -y yum-utils device-mapper-persistent-data lvm2
+		yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+                yum update
+		yum install docker-ce containerd.io docker-compose-plugin
                 systemctl start docker
 
         elif [ $(command -v pacman) ]; then
@@ -28,8 +27,8 @@ manager_detection(){
         elif [ $(command -v apk) ]; then
                 apk update 
 		apk add docker openrc
-                read -p 'desired docker user: ' userselect
-                addgroup $userselect docker
+		addgroup username docker
+                rc-update add docker boot
                 service docker start
         fi
 }
