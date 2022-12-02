@@ -9,19 +9,14 @@ manager_detection(){
                 apt update
                 for i in docker.io docker-compose-plugin containerd.io; do apt install -y $i; done
                 systemctl start docker
-        elif [ $(command -v yum) ]; then
-                yum install -y yum-utils device-mapper-persistent-data lvm2
-		yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
-                yum update
-		yum install docker-ce containerd.io docker-compose-plugin
-                systemctl start docker
+        elif [ $(command -v dnf) ]; then
+                dnf install dnf-plugins-core -y
+		dnf config-manager --add-repo https://download.docker.com/linux/fedora/docker-ce.repo
+		sudo dnf install docker-ce docker-ce-cli containerd.io
+		systemctl start docker
         elif [ $(command -v pacman) ]; then
-                pacman -S gnome-terminal
-                packman -S wget
-                cd /tmp
-                wget https://download.docker.com/linux/static/stable/aarch64/docker-20.10.9.tgz
-                tar xzvf docker-20.10.9.tgz
-                sudo cp docker/* /usr/bin/
+                pacman -Sy
+		pacman -S docker -y
                 dockerd &
         elif [ $(command -v apk) ]; then
                 sed -i '/community/s/^#//g' /etc/apk/repositories
